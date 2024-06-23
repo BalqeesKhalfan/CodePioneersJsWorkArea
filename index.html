@@ -1,76 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CP Remind Me</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
-      }
-      #initialSetCount {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-      }
-      #setButton {
-        position: absolute;
-        top: 20px;
-        left: 200px;
-      }
-      #myCounter {
-        color: orange;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="mb-4">Remaining time for the current session</h1>
-      <h2><span id="myCounter">0</span> Seconds</h2>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CP Remind Me</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    #initialSetCount {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+    #setButton {
+      position: absolute;
+      top: 20px;
+      left: 200px;
+    }
+    #myCounter {
+      color: orange;
+    }
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 1.2em;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="mb-4">Remaining time for the current session</h1>
+  <h2><span id="myCounter">0</span> Seconds</h2>
 
-      <input id="initialSetCount" class="form-control" type="number" placeholder="Enter number of seconds" />
-      <input id="setButton" class="btn btn-primary" type="button" value="Set" />
-    </div>
+  <input id="initialSetCount" class="form-control" type="number" placeholder="Enter number of seconds" />
+  <input id="setButton" class="btn btn-primary" type="button" value="Set" />
+</div>
+<footer id="footer"></footer>
+<script>
+  const setButtonObj = document.getElementById("setButton");
+  setButtonObj.addEventListener("click", ()=>{
+    console.log("Button Clicked!!!");
+    initialSetCountObj = document.getElementById("initialSetCount");
+    console.log(initialSetCountObj.value);
 
-    <script>
-      const setButtonObj = document.getElementById("setButton");
-      setButtonObj.addEventListener("click", ()=>{
-        console.log("Button Clicked!!!");
-        initialSetCountObj = document.getElementById("initialSetCount");
-        console.log(initialSetCountObj.value);
+    const countElem = document.getElementById("myCounter");
+    let initialCountValue = Number(initialSetCountObj.value);
+    countElem.innerText = initialCountValue;
 
-        const countElem = document.getElementById("myCounter");
-        let initialCountValue = Number(initialSetCountObj.value);
+    const intervalObj = setInterval(()=>{
+      if (initialCountValue > 0) {
+        initialCountValue = initialCountValue - 1;
         countElem.innerText = initialCountValue;
+      } else {
+        clearInterval(intervalObj);
+        const footerElem = document.getElementById("footer");
+        footerElem.innerText = "Session time is over";
+      }
+    }, 1000);
+  });
 
-        const intervalObj = setInterval(()=>{
-          if (initialCountValue > 0) {
-            initialCountValue = initialCountValue - 1;
-            countElem.innerText = initialCountValue;
-          } else {
-            clearInterval(intervalObj);
-          }
-        }, 1000);
-      });
+  // Send a GET request to an API  Async function
+  const requestOptions = {
+    method: "GET",
+    redirect: "follow"
+  };
 
-      // Send a GET request to an API  Async function
-      const requestOptions = {
-        method: "GET",
-        redirect: "follow"
-      };
+  fetch("https://api.github.com/users/suly98")
+    .then((response) => response.json())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
 
-      fetch("https://api.github.com/users/suly98")
-        .then((response) => response.json())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error));
-
-      console.log("Done with the script!");
-    </script>
-  </body>
+  console.log("Done with the script!");
+</script>
+</body>
 </html>
