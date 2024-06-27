@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .header {
+            background-color: #4CAF50; /* Different color for Product list */
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Product List</h1>
+    <div id="message"></div>
+</div>
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody id="productlist"></tbody>
+        </table>
+    </div>
+
+    <div class="form-container">
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productId">ID</label>
+                <input type="text" class="form-control" id="productId" required>
+            </div>
+            <div class="form-group">
+                <label for="productName">Name</label>
+                <input type="text" class="form-control" id="productName" required>
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Price</label>
+                <input type="text" class="form-control" id="productPrice" required>
+            </div>
+            <div class="form-group">
+                <label for="productQuantity">Quantity</label>
+                <input type="text" class="form-control" id="productQuantity" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('http://localhost:8080/api/v1/products')
+            .then(response => response.json())
+            .then(data => {
+                const productList = document.getElementById('productlist');
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>${item.quantity}</td>
+                    `;
+                    productList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        document.getElementById('productForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const id = document.getElementById('productId').value;
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const quantity = document.getElementById('productQuantity').value;
+
+            fetch('http://localhost:8080/api/v1/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, name, price, quantity })
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('message').innerText = 'Product added successfully!';
+                    document.getElementById('message').style.color = 'green';
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${id}</td>
+                        <td>${name}</td>
+                        <td>${price}</td>
+                        <td>${quantity}</td>
+                    `;
+                    document.getElementById('productlist').appendChild(newRow);
+                } else {
+                    document.getElementById('message').innerText = 'Failed to add product.';
+                    document.getElementById('message').style.color = 'red';
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').innerText = 'Error adding product.';
+                document.getElementById('message').style.color = 'red';
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+</body>
+</html>
